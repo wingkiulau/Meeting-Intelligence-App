@@ -1,13 +1,10 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createClient() {
-  const dbUrl = path.join(process.cwd(), "dev.db");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const adapter = new PrismaBetterSqlite3({ url: dbUrl } as any);
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   return new PrismaClient({ adapter });
 }
 
