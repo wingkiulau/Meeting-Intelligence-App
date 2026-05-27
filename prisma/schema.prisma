@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Summary {
+  id          Int      @id @default(autoincrement())
+  title       String
+  meetingType String
+  rawInput    String
+  format      String   @default("detailed")
+  summary     String
+  actionItems String
+  riskFlags   String
+  createdAt   DateTime @default(now())
+}
