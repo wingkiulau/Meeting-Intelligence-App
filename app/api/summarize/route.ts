@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { ratelimit } from "../../../lib/ratelimit";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -40,6 +41,14 @@ function normalizeMeetingType(raw: string): MeetingType {
 }
 
 export async function POST(req: NextRequest) {
+  if (ratelimit) {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anonymous";
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
   try {
     const { transcript, format } = await req.json();
 
